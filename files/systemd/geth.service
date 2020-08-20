@@ -1,0 +1,19 @@
+[Unit]
+Description=Ethereum Go Client (ETH1)
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=geth
+Group=geth
+UMask=0077
+Restart=always
+RestartSec=5
+ExecStart=/usr/bin/geth \
+    --datadir /var/lib/geth \
+    --goerli \
+    --http 
+
+[Install]
+WantedBy=default.target

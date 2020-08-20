@@ -1,0 +1,20 @@
+[Unit]
+Description=Prometheus
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=metrics
+Group=metrics
+UMask=0077
+Restart=always
+RestartSec=5
+ExecStart=/var/lib/metrics/prometheus/prometheus \
+    --config.file /var/lib/metrics/prometheus/prometheus.yml \
+    --storage.tsdb.path /var/lib/metrics/prometheus/data/ \
+    --web.console.templates=/var/lib/metrics/prometheus/consoles \
+    --web.console.libraries=/var/lib/metrics/prometheus/console_libraries
+
+[Install]
+WantedBy=multi-user.target

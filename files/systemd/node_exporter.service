@@ -1,0 +1,14 @@
+[Unit]
+Description=Node Exporter
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=metrics
+Group=metrics
+UMask=0077
+ExecStart=/var/lib/metrics/node_exporter/node_exporter
+
+[Install]
+WantedBy=multi-user.target

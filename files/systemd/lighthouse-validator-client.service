@@ -1,0 +1,17 @@
+[Unit]
+Description=Lighthouse Validator Client (ETH2)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=lhvc
+Group=lhvc
+UMask=0077
+Restart=always
+RestartSec=10
+ExecStart=/usr/local/bin/lighthouse vc \
+    --datadir /var/lib/lhvc
+
+[Install]
+WantedBy=multi-user.target

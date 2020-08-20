@@ -1,0 +1,65 @@
+---
+- name: make ~/bin directory for convenience scripts
+  file:
+    path: ~/bin
+    state: directory
+
+- name: install login-geth.sh
+  copy:
+    src: files/scripts/login-geth.sh
+    dest: ~/bin/login-geth.sh
+    mode: 0700
+
+- name: install login-lhbn.sh
+  copy:
+    src: files/scripts/login-lhbn.sh
+    dest: ~/bin/login-lhbn.sh
+    mode: 0700
+
+- name: install login-lhvc.sh
+  copy:
+    src: files/scripts/login-lhvc.sh
+    dest: ~/bin/login-lhvc.sh
+    mode: 0700
+
+- name: install login-metrics.sh
+  copy:
+    src: files/scripts/login-metrics.sh
+    dest: ~/bin/login-metrics.sh
+    mode: 0700
+
+- name: install tail-geth.sh
+  copy:
+    src: files/scripts/tail-geth.sh
+    dest: ~/bin/tail-geth.sh
+    mode: 0700
+
+- name: install tail-grafana.sh
+  copy:
+    src: files/scripts/tail-grafana.sh
+    dest: ~/bin/tail-grafana.sh
+    mode: 0700
+
+- name: install tail-lhbn.sh
+  copy:
+    src: files/scripts/tail-lhbn.sh
+    dest: ~/bin/tail-lhbn.sh
+    mode: 0700
+
+- name: install tail-lhvc.sh
+  copy:
+    src: files/scripts/tail-lhvc.sh
+    dest: ~/bin/tail-lhvc.sh
+    mode: 0700
+
+- name: install tail-node_exporter.sh
+  copy:
+    src: files/scripts/tail-node_exporter.sh
+    dest: ~/bin/tail-node_exporter.sh
+    mode: 0700
+
+- name: install tail-prometheus.sh
+  copy:
+    src: files/scripts/tail-prometheus.sh
+    dest: ~/bin/tail-prometheus.sh
+    mode: 0700

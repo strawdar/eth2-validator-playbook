@@ -1,0 +1,242 @@
+---
+- name: create dedicated user for metrics
+  become: yes
+  user:
+    name: metrics
+    create_home: no
+    home: /nonexistent
+    shell: /bin/false
+
+- name: prepare workspace for metrics user
+  become: yes
+  file:
+    path: /var/lib/metrics
+    state: directory
+    recurse: yes
+    mode: o-rwx
+    owner: metrics
+    group: metrics
+
+#
+# Prometheus install
+#
+
+- name: Prometheus - download tarball
+  become: yes
+  get_url:
+    url: https://github.com/prometheus/prometheus/releases/download/v2.20.1/prometheus-2.20.1.linux-amd64.tar.gz
+    dest: /var/lib/metrics/prometheus-2.20.1.linux-amd64.tar.gz
+    checksum: sha256:8fb248b579b8b9a88dd9b1686f7f68db7071960a45b28619145d3a4037375dcb
+    owner: metrics
+    group: metrics
+
+- name: Prometheus - extract tarball
+  become: yes
+  unarchive:
+    src: /var/lib/metrics/prometheus-2.20.1.linux-amd64.tar.gz
+    dest: /var/lib/metrics
+    remote_src: yes
+    owner: metrics
+    group: metrics
+
+- name: Prometheus - symlink without version
+  become: yes
+  file:
+    src: /var/lib/metrics/prometheus-2.20.1.linux-amd64
+    dest: /var/lib/metrics/prometheus
+    state: link
+    owner: metrics
+    group: metrics
+
+- name: Prometheus - upload prometheus.yml
+  become: yes
+  copy:
+    src: files/prometheus.yml
+    dest: /var/lib/metrics/prometheus/prometheus.yml
+    force: yes
+    owner: metrics
+    group: metrics
+
+- name: Prometheus - install systemd service
+  become: yes
+  copy:
+    src: files/systemd/prometheus.service
+    dest: /etc/systemd/system/prometheus.service
+    owner: root
+    group: root
+    mode: 0600
+
+- name: Prometheus - cleanup
+  become: yes
+  file:
+    path: /var/lib/metrics/prometheus-2.20.1.linux-amd64.tar.gz
+    state: absent
+
+#
+# node_exporter install
+#
+
+- name: node_exporter - download tarball
+  become: yes
+  get_url:
+    url: https://github.com/prometheus/node_exporter/releases/download/v1.0.1/node_exporter-1.0.1.linux-amd64.tar.gz
+    dest: /var/lib/metrics/node_exporter-1.0.1.linux-amd64.tar.gz
+    checksum: sha256:3369b76cd2b0ba678b6d618deab320e565c3d93ccb5c2a0d5db51a53857768ae
+    owner: metrics
+    group: metrics
+
+- name: node_exporter - extract tarball
+  become: yes
+  unarchive:
+    src: /var/lib/metrics/node_exporter-1.0.1.linux-amd64.tar.gz
+    dest: /var/lib/metrics/
+    remote_src: yes
+    owner: metrics
+    group: metrics
+
+- name: node_exporter - symlink without version
+  become: yes
+  file:
+    src: /var/lib/metrics/node_exporter-1.0.1.linux-amd64
+    dest: /var/lib/metrics/node_exporter
+    state: link
+    owner: metrics
+    group: metrics
+
+- name: node_exporter - install systemd service
+  become: yes
+  copy:
+    src: files/systemd/node_exporter.service
+    dest: /etc/systemd/system/node_exporter.service
+    owner: root
+    group: root
+    mode: 0600
+
+- name: node_explorer - cleanup
+  become: yes
+  file:
+    path: /var/lib/metrics/node_exporter-1.0.1.linux-amd64.tar.gz
+    state: absent
+
+#
+# Grafana install
+#
+
+- name: Grafana - add GPG key
+  become: yes
+  apt_key:
+    url: https://packages.grafana.com/gpg.key
+    state: present
+
+- name: Grafana - add APT repository
+  become: yes
+  apt_repository:
+    repo: deb https://packages.grafana.com/oss/deb stable main
+    state: present
+
+- name: Grafana - install
+  become: yes
+  apt:
+    name: grafana
+    state: latest
+    update_cache: yes
+
+- name: Grafana - make ssl directory
+  become: yes
+  file:
+    path: /var/lib/grafana/ssl
+    state: directory
+    owner: grafana
+    group: grafana
+
+- name: Grafana - generate private key
+  become: yes
+  openssl_privatekey:
+    path: /var/lib/grafana/ssl/validator.pem
+    owner: grafana
+    group: grafana
+
+- name: Grafana - generate certificate signing request
+  become: yes
+  openssl_csr:
+    path: /var/lib/grafana/ssl/validator.csr
+    privatekey_path: /var/lib/grafana/ssl/validator.pem
+    common_name: validator.local
+    owner: grafana
+    group: grafana
+
+- name: Grafana - generate self-signed certificate
+  become: yes
+  openssl_certificate:
+    path: /var/lib/grafana/ssl/validator.crt
+    privatekey_path: /var/lib/grafana/ssl/validator.pem
+    csr_path: /var/lib/grafana/ssl/validator.csr
+    provider: selfsigned
+    owner: grafana
+    group: grafana
+
+- name: Grafana - configure to use HTTPS
+  become: yes
+  lineinfile:
+    path: /etc/grafana/grafana.ini
+    regexp: '^(\;)*protocol \='
+    line: 'protocol = https'
+    state: present
+
+- name: Grafana - configure to use secure cookies
+  become: yes
+  lineinfile:
+    path: /etc/grafana/grafana.ini
+    regexp: '^(\;)*cookie_secure \='
+    line: 'cookie_secure = true'
+    state: present
+
+- name: Grafana - specify certificate key
+  become: yes
+  lineinfile:
+    path: /etc/grafana/grafana.ini
+    regexp: '^cert_key \='
+    insertafter: '^# https certs & key file'
+    line: 'cert_key = /var/lib/grafana/ssl/validator.pem'
+    state: present
+
+- name: Grafana - specify certificate file
+  become: yes
+  lineinfile:
+    path: /etc/grafana/grafana.ini
+    regexp: '^cert_file \='
+    insertafter: '^# https certs & key file'
+    line: 'cert_file = /var/lib/grafana/ssl/validator.crt'
+    state: present
+
+- name: Grafana - disable user account signup
+  become: yes
+  lineinfile:
+    path: /etc/grafana/grafana.ini
+    regexp: '^allow_sign_up \='
+    insertafter: '^# disable user signup / registration'
+    line: 'allow_sign_up = false'
+    state: present
+
+- name: Grafana - remove global access to home directory
+  become: yes
+  file:
+    path: /var/lib/grafana
+    state: directory
+    recurse: yes
+    mode: o-rwx
+
+#
+# Misc
+#
+
+- name: systemd daemon-reload
+  become: yes
+  systemd:
+    daemon_reload: yes
+
+- name: UFW - allow port 3000 (Grafana)
+  become: yes
+  ufw:
+    rule: allow
+    port: 3000

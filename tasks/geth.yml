@@ -1,0 +1,50 @@
+---
+- name: Geth - add APT repository
+  become: yes
+  apt_repository:
+    repo: ppa:ethereum/ethereum
+
+- name: Geth - install
+  become: yes
+  apt:
+    name: ethereum
+    state: latest
+    update_cache: yes
+
+- name: Geth - create dedicated user
+  become: yes
+  user:
+    name: geth
+    create_home: no
+    home: /nonexistent
+    shell: /bin/false
+
+- name: Geth - prepare workspace for user
+  become: yes
+  file:
+    path: /var/lib/geth
+    state: directory
+    recurse: yes
+    mode: o-rwx
+    owner: geth
+    group: geth
+
+- name: Geth - install systemd service
+  become: yes
+  copy:
+    src: files/systemd/geth.service
+    dest: /etc/systemd/system/geth.service
+    owner: root
+    group: root
+    mode: 0600
+
+- name: systemd daemon-reload
+  become: yes
+  systemd:
+    daemon_reload: yes
+
+- name: UFW - allow port 30303 (Geth)
+  become: yes
+  ufw:
+    rule: allow
+    port: 30303

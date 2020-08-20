@@ -1,0 +1,74 @@
+#
+# This playbook installs:
+# - Lighthouse (Eth2)
+# - Geth (Eth1)
+# - Prometheus
+# - Grafana
+#
+# It is based on Somer Esat's guide found here:
+# https://medium.com/@SomerEsat/guide-to-staking-on-ethereum-2-0-ubuntu-medalla-lighthouse-c6f3c34597a8
+#
+---
+- name: Eth2 Validator Playbook (Madalla Testnet)
+  hosts: all
+
+  # By default this playbook uses the 'ubuntu' user, but this can be
+  # overwritten with the PLAYBOOK_USER environment variable. This user needs
+  # sudo access on the remote system.
+  user: "{{ lookup('env', 'PLAYBOOK_USER') | default('ubuntu') }}"
+
+  tasks:
+    #
+    # Misc Pre-Install Stuff
+    #
+
+    - name: update APT packages
+      become: yes
+      apt:
+        name: "*"
+        state: latest
+        update_cache: yes
+
+    # This umask will make it so that new files will by default not be
+    # accessible by other users on the system. Just to be sure, restrictive
+    # UMask values are also supplied explicitly in this playbook's systemd
+    # services.
+    - name: set tighter umask
+      become: yes
+      lineinfile:
+        path: /etc/login.defs
+        regexp: "^UMASK"
+        line: "UMASK 077"
+
+    - name: re-login
+      meta: reset_connection
+
+    - name: remove global access to home directory
+      file:
+        path: "{{ ansible_user_dir }}"
+        state: directory
+        recurse: yes
+        mode: o-rwx
+    
+    - name: UFW - allow SSH
+      become: yes
+      ufw:
+        rule: allow
+        name: OpenSSH
+
+    - name: UFW - turn on
+      become: yes
+      ufw:
+        state: enabled
+
+    #
+    # Main Installation
+    #
+
+    - import_tasks: tasks/lighthouse.yml
+ 
+    - import_tasks: tasks/geth.yml
+
+    - import_tasks: tasks/metrics.yml
+
+    - import_tasks: tasks/scripts.yml

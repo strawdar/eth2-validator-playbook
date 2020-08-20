@@ -1,0 +1,23 @@
+[Unit]
+Description=Lighthouse Beacon Node (ETH2)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=lhbn
+Group=lhbn
+UMask=0077
+Restart=always
+RestartSec=5
+ExecStart=/usr/local/bin/lighthouse bn \
+    --datadir /var/lib/lhbn \
+    --testnet medalla \
+    --http \
+    --eth1 \
+    --max-skip-slots 700 \
+    --target-peers 500
+
+
+[Install]
+WantedBy=multi-user.target
