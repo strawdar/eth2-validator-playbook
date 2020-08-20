@@ -5,11 +5,8 @@ This playbook configures a target system to run an Ethereum 2 beacon node and va
 
 I wrote this for my own use so that I can quickly re/configure a validator from scratch if need be. I'm happy to share it, and hopefully it can be of use to others in the community.
 
-Most of the playbook is based on Somer Esat's very helpful Lighthouse staking guide found here:
-https://medium.com/@SomerEsat/guide-to-staking-on-ethereum-2-0-ubuntu-medalla-lighthouse-c6f3c34597a8
+Most of the playbook is based on [Somer Esat's very helpful Lighthouse staking guide](https://medium.com/@SomerEsat/guide-to-staking-on-ethereum-2-0-ubuntu-medalla-lighthouse-c6f3c34597a8). Parts of [Sigma Prime's Lighthouse Book](https://lighthouse-book.sigmaprime.io/become-a-validator-source.html) also came in handy.
 
-Parts of Sigma Prime's Lighthouse Book also came in handy:
-https://lighthouse-book.sigmaprime.io/become-a-validator-source.html
 
 
 Test Setup
