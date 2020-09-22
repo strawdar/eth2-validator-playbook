@@ -1,0 +1,115 @@
+---
+#
+# VeraCrypt - for sneakernet transfers
+#
+- name: VeraCrypt - download .deb
+  get_url:
+    url: https://launchpad.net/veracrypt/trunk/1.24-update7/+download/veracrypt-console-1.24-Update7-Ubuntu-20.04-amd64.deb
+    dest: ~/veracrypt-console-1.24-Update7-Ubuntu-20.04-amd64.deb
+
+- name: VeraCrypt - download signature
+  get_url:
+    url: https://launchpad.net/veracrypt/trunk/1.24-update7/+download/veracrypt-console-1.24-Update7-Ubuntu-20.04-amd64.deb.sig
+    dest: ~/veracrypt-console-1.24-Update7-Ubuntu-20.04-amd64.deb.sig
+
+- name: VeraCrypt - download public key
+  get_url:
+    url: https://www.idrix.fr/VeraCrypt/VeraCrypt_PGP_public_key.asc
+    dest: ~/VeraCrypt_PGP_public_key.asc
+
+- name: VeraCrypt - import public key
+  shell: gpg --import VeraCrypt_PGP_public_key.asc
+  args:
+    chdir: ~/
+
+- name: VeraCrypt - list fingerprint
+  shell: gpg --fingerprint 5069A233D55A0EEB174A5FC3821ACD02680D16DE
+
+- name: VeraCrypt - verify
+  shell: gpg --verify veracrypt-console-1.24-Update7-Ubuntu-20.04-amd64.deb.sig
+  args:
+    chdir: ~/
+
+- name: VeraCrypt - install
+  become: yes
+  apt:
+    deb: "{{ ansible_user_dir }}/veracrypt-console-1.24-Update7-Ubuntu-20.04-amd64.deb"
+
+- name: VeraCrypt - cleanup 1
+  file:
+    path: ~/veracrypt-console-1.24-Update7-Ubuntu-20.04-amd64.deb
+    state: absent
+
+- name: VeraCrypt - cleanup 2
+  file:
+    path: ~/veracrypt-console-1.24-Update7-Ubuntu-20.04-amd64.deb.sig
+    state: absent
+
+- name: VeraCrypt - cleanup 3
+  file:
+    path: ~/VeraCrypt_PGP_public_key.asc
+    state: absent
+
+#
+# Google Authenticator - for multi-factor SSH login
+#
+# NOTE: This just installs the package. More leg work is needed to enable it.
+#       See: https://www.digitalocean.com/community/tutorials/how-to-set-up-multi-factor-authentication-for-ssh-on-ubuntu-16-04
+#
+- name: Google Authenticator - install auth module
+  become: yes
+  apt:
+    name: libpam-google-authenticator
+    state: latest
+
+#
+# VPN Client - for obscuring validator IP/traffic 
+#
+# NOTE: This will generate a key pair and plug it into the configuration file,
+#       but extra information is required from the VPN server.
+#
+- name: VPN Client - install packages
+  become: yes
+  apt:
+    pkg:
+      - wireguard
+      - openresolv
+
+- name: VPN Client - generate private key
+  become: yes
+  shell: wg genkey > client.key
+  args:
+    chdir: /etc/wireguard
+    creates: /etc/wireguard/client.key
+
+- name: VPN Client - generate public key
+  become: yes
+  shell: cat client.key | wg pubkey > client.pub
+  args:
+    chdir: /etc/wireguard
+    creates: /etc/wireguard/client.pub
+
+- name: VPN Client - install config template
+  become: yes
+  copy:
+    src: files/vpn/wg0_client.conf
+    dest: /etc/wireguard/wg0.conf
+    owner: root
+    group: root
+    mode: 0600
+
+- name: VPN Client - write in client private key
+  become: yes
+  shell: sed -i "s/%CLIENT_PRIVATE_KEY%/$(cat client.key)/g" wg0.conf
+  args:
+    chdir: /etc/wireguard
+    warn: false
+
+# NOTE: This is currently set to Google DNS. If your VPN server is a VPS there
+#       are probably local DNS servers available that can be used instead.
+- name: VPN Client - write in DNS servers
+  become: yes
+  replace:
+    path: /etc/wireguard/wg0.conf
+    regexp: '%DNS%'
+    replace: '8.8.8.8, 8.8.4.4'

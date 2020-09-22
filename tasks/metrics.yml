@@ -24,16 +24,16 @@
 - name: Prometheus - download tarball
   become: yes
   get_url:
-    url: https://github.com/prometheus/prometheus/releases/download/v2.20.1/prometheus-2.20.1.linux-amd64.tar.gz
-    dest: /var/lib/metrics/prometheus-2.20.1.linux-amd64.tar.gz
-    checksum: sha256:8fb248b579b8b9a88dd9b1686f7f68db7071960a45b28619145d3a4037375dcb
+    url: https://github.com/prometheus/prometheus/releases/download/v2.21.0/prometheus-2.21.0.linux-amd64.tar.gz
+    dest: /var/lib/metrics/prometheus-2.21.0.linux-amd64.tar.gz
+    checksum: sha256:f1f2eeabbf7822572dce67565dc96ffaa2dd1897dd1d844562552b11123f151a
     owner: metrics
     group: metrics
 
 - name: Prometheus - extract tarball
   become: yes
   unarchive:
-    src: /var/lib/metrics/prometheus-2.20.1.linux-amd64.tar.gz
+    src: /var/lib/metrics/prometheus-2.21.0.linux-amd64.tar.gz
     dest: /var/lib/metrics
     remote_src: yes
     owner: metrics
@@ -42,7 +42,7 @@
 - name: Prometheus - symlink without version
   become: yes
   file:
-    src: /var/lib/metrics/prometheus-2.20.1.linux-amd64
+    src: /var/lib/metrics/prometheus-2.21.0.linux-amd64
     dest: /var/lib/metrics/prometheus
     state: link
     owner: metrics
@@ -69,7 +69,7 @@
 - name: Prometheus - cleanup
   become: yes
   file:
-    path: /var/lib/metrics/prometheus-2.20.1.linux-amd64.tar.gz
+    path: /var/lib/metrics/prometheus-2.21.0.linux-amd64.tar.gz
     state: absent
 
 #
