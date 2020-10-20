@@ -9,7 +9,7 @@
 # https://medium.com/@SomerEsat/guide-to-staking-on-ethereum-2-0-ubuntu-medalla-lighthouse-c6f3c34597a8
 #
 ---
-- name: Eth2 Validator Playbook (Madalla Testnet)
+- name: Eth2 Validator Playbook (Medalla Testnet)
   hosts: all
 
   # By default this playbook uses the 'ubuntu' user, but this can be
@@ -61,6 +61,19 @@
       ufw:
         state: enabled
 
+    - name: install chrony for smoother time sync
+      become: yes
+      apt:
+        name: chrony
+        state: latest
+
+    - name: start and enable chrony service
+      become: yes
+      systemd:
+        name: chrony
+        state: started
+        enabled: yes
+
     #
     # Main Installation
     #
@@ -72,3 +85,8 @@
     - import_tasks: tasks/metrics.yml
 
     - import_tasks: tasks/scripts.yml
+
+    #
+    # Strawdar's Extras (commented out by default)
+    #
+    # - import_tasks: tasks/extras.yml

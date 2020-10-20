@@ -11,13 +11,12 @@ UMask=0077
 Restart=always
 RestartSec=5
 ExecStart=/usr/local/bin/lighthouse bn \
-    --datadir /var/lib/lhbn \
+    --datadir /var/lib/lighthouse \
     --testnet medalla \
-    --http \
-    --eth1 \
-    --max-skip-slots 700 \
-    --target-peers 500
-
+    --staking \
+    --eth1-endpoint http://127.0.0.1:8545 \
+    --metrics \
+    --target-peers 50
 
 [Install]
 WantedBy=multi-user.target

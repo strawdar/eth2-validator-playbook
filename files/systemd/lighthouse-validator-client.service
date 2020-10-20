@@ -11,7 +11,8 @@ UMask=0077
 Restart=always
 RestartSec=10
 ExecStart=/usr/local/bin/lighthouse vc \
-    --datadir /var/lib/lhvc
+    --testnet medalla \
+    --datadir /var/lib/lighthouse
 
 [Install]
 WantedBy=multi-user.target

@@ -24,16 +24,16 @@
 - name: Prometheus - download tarball
   become: yes
   get_url:
-    url: https://github.com/prometheus/prometheus/releases/download/v2.20.1/prometheus-2.20.1.linux-amd64.tar.gz
-    dest: /var/lib/metrics/prometheus-2.20.1.linux-amd64.tar.gz
-    checksum: sha256:8fb248b579b8b9a88dd9b1686f7f68db7071960a45b28619145d3a4037375dcb
+    url: https://github.com/prometheus/prometheus/releases/download/v2.21.0/prometheus-2.21.0.linux-amd64.tar.gz
+    dest: /var/lib/metrics/prometheus-2.21.0.linux-amd64.tar.gz
+    checksum: sha256:f1f2eeabbf7822572dce67565dc96ffaa2dd1897dd1d844562552b11123f151a
     owner: metrics
     group: metrics
 
 - name: Prometheus - extract tarball
   become: yes
   unarchive:
-    src: /var/lib/metrics/prometheus-2.20.1.linux-amd64.tar.gz
+    src: /var/lib/metrics/prometheus-2.21.0.linux-amd64.tar.gz
     dest: /var/lib/metrics
     remote_src: yes
     owner: metrics
@@ -42,7 +42,7 @@
 - name: Prometheus - symlink without version
   become: yes
   file:
-    src: /var/lib/metrics/prometheus-2.20.1.linux-amd64
+    src: /var/lib/metrics/prometheus-2.21.0.linux-amd64
     dest: /var/lib/metrics/prometheus
     state: link
     owner: metrics
@@ -69,7 +69,7 @@
 - name: Prometheus - cleanup
   become: yes
   file:
-    path: /var/lib/metrics/prometheus-2.20.1.linux-amd64.tar.gz
+    path: /var/lib/metrics/prometheus-2.21.0.linux-amd64.tar.gz
     state: absent
 
 #
@@ -225,6 +225,59 @@
     state: directory
     recurse: yes
     mode: o-rwx
+
+#
+# Eth2Stats install
+#
+
+- name: Eth2Stats - install go
+  become: yes
+  apt:
+    name: golang
+    state: latest
+
+- name: Eth2Stats - clone repository
+  become: yes
+  git:
+    repo: 'https://github.com/Alethio/eth2stats-client'
+    dest: /var/lib/metrics/eth2stats-client
+    clone: yes
+    update: yes
+
+- name: Eth2Stats - make
+  become: yes
+  shell: make build
+  args:
+    chdir: /var/lib/metrics/eth2stats-client
+
+- name: Eth2Stats - set file permissions
+  become: yes
+  file:
+    path: /var/lib/metrics/eth2stats-client
+    owner: metrics
+    group: metrics
+    recurse: yes
+
+- name: Eth2Stats - make data dir
+  become: yes
+  file:
+    path: /var/lib/metrics/eth2stats-data
+    state: directory
+    recurse: yes
+    mode: o-rwx
+    owner: metrics
+    group: metrics
+
+# NOTE: Edit the node name in this file to configure what name shows up on
+#       the Eth2Stats board.
+- name: Eth2Stats - install systemd service
+  become: yes
+  copy:
+    src: files/systemd/eth2stats.service
+    dest: /etc/systemd/system/eth2stats.service
+    owner: root
+    group: root
+    mode: 0600
 
 #
 # Misc
