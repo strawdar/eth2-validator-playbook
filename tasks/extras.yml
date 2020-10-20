@@ -97,19 +97,3 @@
     owner: root
     group: root
     mode: 0600
-
-- name: VPN Client - write in client private key
-  become: yes
-  shell: sed -i "s/%CLIENT_PRIVATE_KEY%/$(cat client.key)/g" wg0.conf
-  args:
-    chdir: /etc/wireguard
-    warn: false
-
-# NOTE: This is currently set to Google DNS. If your VPN server is a VPS there
-#       are probably local DNS servers available that can be used instead.
-- name: VPN Client - write in DNS servers
-  become: yes
-  replace:
-    path: /etc/wireguard/wg0.conf
-    regexp: '%DNS%'
-    replace: '8.8.8.8, 8.8.4.4'

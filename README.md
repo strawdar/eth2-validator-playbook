@@ -1,7 +1,7 @@
-Ethereum 2 Validator Playbook (Madalla Testnet!)
+Ethereum 2 Validator Playbook (Medalla Testnet!)
 ================================================
 
-This playbook configures a target system to run an Ethereum 2 beacon node and validator client using Lighthouse. Everything is currently setup to run on the Madalla testnet.
+This playbook configures a target system to run an Ethereum 2 beacon node and validator client using Lighthouse. Everything is currently setup to run on the Medalla testnet.
 
 I wrote this for my own use so that I can quickly re/configure a validator from scratch if need be. I'm happy to share it, and hopefully it can be of use to others in the community.
 
@@ -58,7 +58,7 @@ You should be able to manage multiple systems with a playbook like this and an i
 
 Post-Playbook Stuff
 -------------------
-- The playbook will not setup your validator keys with Lighthouse. This should be done as the `lhvc` user, which can be accessed with the `login-lhvc.sh` convenience script. When importing validator keys the value of `--validator-dir` should be `/var/lib/lhvc`.
+- The playbook will not setup your validator keys with Lighthouse. This should be done as the `lhvc` user, which can be accessed with the `login-lhvc.sh` convenience script. When importing validator keys the value of `--datadir` should be `/var/lib/lighthouse`.
 - If you want to setup graffiti for a POAP, modify the command in the systemd file at `/etc/systemd/system/lighthouse-beacon-node.service`.
 - None of the new systemd services are configured to start on boot. Services that people probably want to enable at boot:
     - `geth.service`
@@ -78,14 +78,30 @@ Changes from Somer Esat's Guide
 - None of the new systemd services are configured to start on boot.
 - The Go Ethereum user/group name is `geth`.
 - The Lighthouse beacon node user/group name is `lhbn`.
-- The Lighthouse beacon node data directory uses the default location of `/var/lib/lhbn/.lighthouse`.
 - The Lighthouse beacon node systemd service name is `lighthouse-beacon-node.service`.
 - The Lighthouse validator client user/group name is `lhvc`.
-- The Lighthouse validator client data directory uses the default location of `/var/lib/lhvc/.lighthouse`.
 - The Lighthouse validator client systemd service name is `lighthouse-validator-client.service`.
+- Both the `lhbn` and `lhvc` users are members of a common `lighthouse` group.
 - Prometheus and node_exporter run under a single user/group named `metrics`.
 - A self-signed certificate is generated and Grafana is configured to run over HTTPS.
 - A set of convenience scripts are installed for the admin user at `~/bin` for tailing logs and switching to other users.
+
+
+Upgrading from Lighthouse 0.2.x
+-------------------------------
+Previous versions of this playbook installed Lighthouse version 0.2.x. The playbook now uses Lighthouse version 0.3
+which brings breaking database changes and also changes to how the data directory is handled. Older installations can be
+upgraded with this current playbook, but some manual intervention will be required afterwards.
+
+- The data directories have moved from `/var/lib/lhbn` and `/var/lib/lhvc` to sub-directories under
+`/var/lib/lighthouse`. This playbook will create the new data directory for you and leave the old locations intact.
+- The beacon node will need to be resync'd from scratch. Because the data directory is now at a different location this
+will happen automatically when the beacon node service is started.
+- After the beacon node successfully synchronizes with the head state of the chain, the contents of `/var/lib/lhvc` need
+to be copied into `/var/lib/lighthouse/validators`. The file paths inside `validator_definitions.yml` will also need to
+be updated to reflect the new data directory path.
+- Once you have verified that your beacon node and validator client are up and running again with the new version of
+Lighthouse feel free to delete the `/var/lib/lhbn` and `/var/lib/lhvc` directories to reclaim disk space.
 
 
 Casual Disclaimer

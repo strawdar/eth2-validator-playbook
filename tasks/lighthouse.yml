@@ -47,6 +47,21 @@
     group: root
     mode: 0755
 
+- name: Lighthouse - create common user group
+  become: yes
+  group:
+    name: lighthouse
+    state: present
+
+- name: Lighthouse - create data directory
+  become: yes
+  file:
+    path: /var/lib/lighthouse
+    state: directory
+    mode: 'u=rwx,g=rx'
+    owner: root
+    group: lighthouse
+
 - name: Lighthouse - create dedicated user for beacon node
   become: yes
   user:
@@ -54,11 +69,12 @@
     create_home: no
     home: /nonexistent
     shell: /bin/false
+    groups: lighthouse
 
 - name: Lighthouse - prepare workspace for beacon node user
   become: yes
   file:
-    path: /var/lib/lhbn
+    path: /var/lib/lighthouse/beacon
     state: directory
     recurse: yes
     mode: o-rwx
@@ -86,11 +102,12 @@
     create_home: no
     home: /nonexistent
     shell: /bin/false
+    groups: lighthouse
 
 - name: Lighthouse - prepare workspace for validator client user
   become: yes
   file:
-    path: /var/lib/lhvc
+    path: /var/lib/lighthouse/validators
     state: directory
     recurse: yes
     mode: o-rwx
