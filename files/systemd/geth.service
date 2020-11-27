@@ -12,7 +12,6 @@ Restart=always
 RestartSec=5
 ExecStart=/usr/bin/geth \
     --datadir /var/lib/geth \
-    --goerli \
     --http 
 
 [Install]

@@ -12,7 +12,7 @@ Restart=always
 RestartSec=5
 ExecStart=/usr/local/bin/lighthouse bn \
     --datadir /var/lib/lighthouse \
-    --testnet medalla \
+    --network mainnet \
     --staking \
     --eth1-endpoint http://127.0.0.1:8545 \
     --metrics \
