@@ -1,0 +1,93 @@
+#
+# This playbook configures a system to act as a WireGuard VPN gateway with
+# port forwarding setup for Geth and Lighthouse.
+#
+# NOTE: This playbook does not handle key exchange between WireGuard peers.
+#
+---
+- name: VPN Gateway Playbook
+  hosts: all
+
+  # By default this playbook uses the 'ubuntu' user, but this can be
+  # overwritten with the PLAYBOOK_USER environment variable. This user needs
+  # sudo access on the remote system.
+  user: "{{ lookup('env', 'PLAYBOOK_USER') | default('ubuntu') }}"
+
+  tasks:
+    #
+    # Misc Pre-Install Stuff
+    #
+
+    - name: update APT packages
+      become: yes
+      apt:
+        name: "*"
+        state: latest
+        update_cache: yes
+
+    # This umask will make it so that new files will by default not be
+    # accessible by other users on the system. Just to be sure, restrictive
+    # UMask values are also supplied explicitly in this playbook's systemd
+    # services.
+    - name: set tighter umask
+      become: yes
+      lineinfile:
+        path: /etc/login.defs
+        regexp: "^UMASK"
+        line: "UMASK 077"
+
+    - name: re-login
+      meta: reset_connection
+
+    - name: remove global access to home directory
+      file:
+        path: "{{ ansible_user_dir }}"
+        state: directory
+        recurse: yes
+        mode: o-rwx
+    
+    - name: UFW - allow SSH
+      become: yes
+      ufw:
+        rule: allow
+        name: OpenSSH
+
+    - name: UFW - turn on
+      become: yes
+      ufw:
+        state: enabled
+
+    #
+    # WireGuard Install
+    #
+
+    - name: WireGuard - install
+      become: yes
+      apt:
+        name: wireguard
+        state: latest
+        update_cache: yes
+    
+    - name: ensure /etc/wireguard directory
+      become: yes
+      file:
+        path: /etc/wireguard
+        state: directory
+        recurse: yes
+        mode: o-rwx
+        owner: root
+        group: root
+    
+    - name: generate server key pair
+      become: yes
+      shell: wg genkey | tee server.key | wg pubkey > server.pub
+      args:
+        chdir: /etc/wireguard
+    
+    #
+    # Traffic Forwarding Setup
+    #
+
+    - name: enable IPv4 packet forwarding (session)
+
+    - name: enable IPv4 packet forwarding (permanent)
