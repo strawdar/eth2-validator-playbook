@@ -1,12 +1,12 @@
-Ethereum 2 Validator Playbook (Medalla Testnet!)
-================================================
+Ethereum Proof of Stake Validator Playbook (MAINNET)
+====================================================
 
-This playbook configures a target system to run an Ethereum 2 beacon node and validator client using Lighthouse. Everything is currently setup to run on the Medalla testnet.
+This playbook configures a target system to run an Ethereum concensus client node + PoS validator using Lighthouse as well as an execution
+client node using Geth. It is currently setup for MAINNET.
 
 I wrote this for my own use so that I can quickly re/configure a validator from scratch if need be. I'm happy to share it, and hopefully it can be of use to others in the community.
 
 Most of the playbook is based on [Somer Esat's very helpful Lighthouse staking guide](https://medium.com/@SomerEsat/guide-to-staking-on-ethereum-2-0-ubuntu-medalla-lighthouse-c6f3c34597a8). Parts of [Sigma Prime's Lighthouse Book](https://lighthouse-book.sigmaprime.io/become-a-validator-source.html) also came in handy.
-
 
 
 Test Setup
@@ -89,8 +89,8 @@ Changes from Somer Esat's Guide
 
 Upgrading from Lighthouse 0.2.x
 -------------------------------
-Previous versions of this playbook installed Lighthouse version 0.2.x. The playbook now uses Lighthouse version 0.3
-which brings breaking database changes and also changes to how the data directory is handled. Older installations can be
+Previous versions of this playbook installed Lighthouse version 0.2.x. Version 0.3 brought
+breaking database changes and also changes to how the data directory is handled. Older installations can be
 upgraded with this current playbook, but some manual intervention will be required afterwards.
 
 - The data directories have moved from `/var/lib/lhbn` and `/var/lib/lhvc` to sub-directories under
