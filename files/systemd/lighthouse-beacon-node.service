@@ -16,7 +16,8 @@ ExecStart=/usr/local/bin/lighthouse bn \
     --staking \
     --eth1-endpoint http://127.0.0.1:8545 \
     --metrics \
-    --target-peers 50
+    --validator-monitor-auto \
+    --target-peers 100
 
 [Install]
 WantedBy=multi-user.target

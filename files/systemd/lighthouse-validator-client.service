@@ -13,7 +13,8 @@ RestartSec=10
 ExecStart=/usr/local/bin/lighthouse vc \
     --network mainnet \
     --datadir /var/lib/lighthouse \
-    --metrics
+    --metrics \
+    --enable-doppelganger-protection
 
 [Install]
 WantedBy=multi-user.target

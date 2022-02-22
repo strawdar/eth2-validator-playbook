@@ -23,14 +23,15 @@
     path: ~/src
     state: directory
 
-# NOTE: By default this will checkout from master. Modify this if you would like
-#       to checkout a specific branch or tag.
+# NOTE: By default this will checkout a specific version tag. Modify the version
+#       param to use a different version/branch.
 - name: Lighthouse - clone repository
   git:
     repo: 'https://github.com/sigp/lighthouse'
     dest: ~/src/lighthouse
     clone: yes
     update: yes
+    version: 'v2.1.3'
 
 - name: Lighthouse - make
   shell: . ~/.profile && make
