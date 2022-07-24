@@ -11,8 +11,10 @@ UMask=0077
 Restart=always
 RestartSec=10
 ExecStart=/usr/local/bin/lighthouse vc \
-    --testnet medalla \
-    --datadir /var/lib/lighthouse
+    --network mainnet \
+    --datadir /var/lib/lighthouse \
+    --metrics \
+    --enable-doppelganger-protection
 
 [Install]
 WantedBy=multi-user.target
