@@ -11,6 +11,7 @@
       - cmake
       - pkg-config
       - libssl-dev
+      - libclang-dev
       - vim # :-)
 
 - name: Lighthouse - install rustup

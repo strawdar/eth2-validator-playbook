@@ -1,8 +1,8 @@
-Ethereum Proof of Stake Validator Playbook (MAINNET)
-====================================================
+Ethereum Proof of Stake Validator Playbook (MAINNET NON-MERGE)
+==============================================================
 
 This playbook configures a target system to run an Ethereum concensus client node + PoS validator using Lighthouse as well as an execution
-client node using Geth. It is currently setup for MAINNET.
+client node using Geth. It is currently setup for MAINNET without preparation for The Merge.
 
 I wrote this for my own use so that I can quickly re/configure a validator from scratch if need be. I'm happy to share it, and hopefully it can be of use to others in the community.
 
