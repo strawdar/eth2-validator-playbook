@@ -114,7 +114,7 @@ Tips
 ----
 
 If people feel so inclined 💌
-- ETH: 0x892D1Abc31B960309886068e40eEdEE5A2125547
+- ETH: strawdar.eth
 
 Please also consider tipping Somer Esat for writing the original guide 🦄
 - https://twitter.com/SomerEsat
