@@ -24,16 +24,16 @@
 - name: Prometheus - download tarball
   become: yes
   get_url:
-    url: https://github.com/prometheus/prometheus/releases/download/v2.33.3/prometheus-2.33.3.linux-amd64.tar.gz
-    dest: /var/lib/metrics/prometheus-2.33.3.linux-amd64.tar.gz
-    checksum: sha256:0e4ebcb1b3282f329cefa7dea88fb5819733dc69bf553b8c2fbf8d031174e8a4
+    url: https://github.com/prometheus/prometheus/releases/download/v2.37.0/prometheus-2.37.0.linux-amd64.tar.gz
+    dest: /var/lib/metrics/prometheus-2.37.0.linux-amd64.tar.gz
+    checksum: sha256:ca70f5a261fd545da0b9893c42a73547a94ebd5111ef2b6b9f8742c5dbb73522
     owner: metrics
     group: metrics
 
 - name: Prometheus - extract tarball
   become: yes
   unarchive:
-    src: /var/lib/metrics/prometheus-2.33.3.linux-amd64.tar.gz
+    src: /var/lib/metrics/prometheus-2.37.0.linux-amd64.tar.gz
     dest: /var/lib/metrics
     remote_src: yes
     owner: metrics
@@ -42,7 +42,7 @@
 - name: Prometheus - symlink without version
   become: yes
   file:
-    src: /var/lib/metrics/prometheus-2.33.3.linux-amd64
+    src: /var/lib/metrics/prometheus-2.37.0.linux-amd64
     dest: /var/lib/metrics/prometheus
     state: link
     owner: metrics
@@ -69,7 +69,7 @@
 - name: Prometheus - cleanup
   become: yes
   file:
-    path: /var/lib/metrics/prometheus-2.33.3.linux-amd64.tar.gz
+    path: /var/lib/metrics/prometheus-2.37.0.linux-amd64.tar.gz
     state: absent
 
 #

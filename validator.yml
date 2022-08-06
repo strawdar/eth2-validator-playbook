@@ -9,7 +9,7 @@
 # https://medium.com/@SomerEsat/guide-to-staking-on-ethereum-2-0-ubuntu-medalla-lighthouse-c6f3c34597a8
 #
 ---
-- name: Eth2 Validator Playbook (Medalla Testnet)
+- name: Eth2 Validator Playbook (Goerli/Prater Testnet)
   hosts: all
 
   # By default this playbook uses the 'ubuntu' user, but this can be
@@ -73,6 +73,37 @@
         name: chrony
         state: started
         enabled: yes
+    
+    - name: create common group for EL and CL users to share files
+      become: yes
+      group:
+        name: common-el-cl
+        state: present
+    
+    - name: create directory for EL and CL users to share files
+      become: yes
+      file:
+        path: /var/lib/common-el-cl
+        state: directory
+        mode: 'u=rwx,g=rx'
+        owner: root
+        group: common-el-cl
+
+    - name: generate jwtsecret file for authenticated RPC
+      become: yes
+      shell: openssl rand -hex 32 | tr -d "\n" | tee jwtsecret
+      args:
+        chdir: /var/lib/common-el-cl
+        creates: /var/lib/common-el-cl/jwtsecret
+
+    - name: set jwtsecret file permissions
+      become: yes
+      file:
+        path: /var/lib/common-el-cl/jwtsecret
+        state: file
+        mode: '640'
+        owner: root
+        group: common-el-cl
 
     #
     # Main Installation

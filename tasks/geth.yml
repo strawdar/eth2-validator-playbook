@@ -18,6 +18,7 @@
     create_home: no
     home: /nonexistent
     shell: /bin/false
+    groups: common-el-cl
 
 - name: Geth - prepare workspace for user
   become: yes

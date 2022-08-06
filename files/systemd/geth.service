@@ -12,7 +12,15 @@ Restart=always
 RestartSec=5
 ExecStart=/usr/bin/geth \
     --datadir /var/lib/geth \
-    --http 
+    --authrpc.jwtsecret=/var/lib/common-el-cl/jwtsecret \
+    --http \
+    --metrics \
+    --metrics.addr 127.0.0.1 \
+    \
+    --goerli \
+    --port 33333 \
+    --metrics.expensive \
+    --pprof
 
 [Install]
 WantedBy=default.target

@@ -1,8 +1,8 @@
-Ethereum Proof of Stake Validator Playbook (MAINNET NON-MERGE)
+Ethereum Proof of Stake Validator Playbook (GOERLI/PRATER)
 ==============================================================
 
 This playbook configures a target system to run an Ethereum concensus client node + PoS validator using Lighthouse as well as an execution
-client node using Geth. It is currently setup for MAINNET without preparation for The Merge.
+client node using Geth. It is currently setup for GOERLI/PRATER in preparation for The Merge.
 
 I wrote this for my own use so that I can quickly re/configure a validator from scratch if need be. I'm happy to share it, and hopefully it can be of use to others in the community.
 
@@ -14,12 +14,12 @@ Test Setup
 Automation loves to break. So while an attempt was made to keep things somewhat general, nothing is guaranteed unless your setup is 110% exactly the same as mine 😉
 
 - Target System
-    - Quad-core x86_64 processor, 16GB RAM, 512GB SSD, wired gigabit ethernet
-    - Fresh install of Ubuntu 20.04 LTS Desktop (x86_64)
+    - Intel NUC8i5BEH, 32GB RAM, 2TB NVMe SSD, wired gigabit ethernet
+    - Fresh install of Ubuntu 22.04 LTS Desktop (x86_64)
     - A non-root admin user available (sudo access)
     - SSH already setup with public key auth
 - Controller System
-    - Ansible 2.9.11 running from macOS
+    - Ansible 2.13.2 running from Arch Linux
 
 
 Caveats

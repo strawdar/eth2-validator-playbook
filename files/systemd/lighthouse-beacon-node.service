@@ -12,12 +12,16 @@ Restart=always
 RestartSec=5
 ExecStart=/usr/local/bin/lighthouse bn \
     --datadir /var/lib/lighthouse \
-    --network mainnet \
     --staking \
-    --eth1-endpoint http://127.0.0.1:8545 \
+    --execution-endpoint http://127.0.0.1:8551 \
+    --execution-jwt /var/lib/common-el-cl/jwtsecret \
     --metrics \
     --validator-monitor-auto \
-    --target-peers 100
+    --target-peers 100 \
+    \
+    --network goerli \
+    --port 9999 \
+    --checkpoint-sync-url https://goerli.checkpoint-sync.ethdevops.io
 
 [Install]
 WantedBy=multi-user.target

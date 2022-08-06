@@ -11,10 +11,12 @@ UMask=0077
 Restart=always
 RestartSec=10
 ExecStart=/usr/local/bin/lighthouse vc \
-    --network mainnet \
     --datadir /var/lib/lighthouse \
     --metrics \
-    --enable-doppelganger-protection
+    --enable-doppelganger-protection \
+    \
+    --network goerli \
+    --suggested-fee-recipient 0xREAL_ADDRESS_HERE
 
 [Install]
 WantedBy=multi-user.target
