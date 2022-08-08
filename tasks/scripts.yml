@@ -4,6 +4,12 @@
     path: ~/bin
     state: directory
 
+- name: install login-besu.sh
+  copy:
+    src: files/scripts/login-besu.sh
+    dest: ~/bin/login-besu.sh
+    mode: 0700
+
 - name: install login-geth.sh
   copy:
     src: files/scripts/login-geth.sh
@@ -26,6 +32,12 @@
   copy:
     src: files/scripts/login-metrics.sh
     dest: ~/bin/login-metrics.sh
+    mode: 0700
+
+- name: install tail-besu.sh
+  copy:
+    src: files/scripts/tail-besu.sh
+    dest: ~/bin/tail-besu.sh
     mode: 0700
 
 - name: install tail-geth.sh
@@ -52,10 +64,10 @@
     dest: ~/bin/tail-lhvc.sh
     mode: 0700
 
-- name: install tail-node_exporter.sh
+- name: install tail-node-exporter.sh
   copy:
-    src: files/scripts/tail-node_exporter.sh
-    dest: ~/bin/tail-node_exporter.sh
+    src: files/scripts/tail-node-exporter.sh
+    dest: ~/bin/tail-node-exporter.sh
     mode: 0700
 
 - name: install tail-prometheus.sh

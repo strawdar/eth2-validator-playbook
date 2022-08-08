@@ -1,4 +1,8 @@
 ---
+#
+# Setup dedicated metrics user and directory (currently unused)
+#
+
 - name: create dedicated user for metrics
   become: yes
   user:
@@ -21,102 +25,26 @@
 # Prometheus install
 #
 
-- name: Prometheus - download tarball
+- name: Prometheus - install along w/ node-exporter
   become: yes
-  get_url:
-    url: https://github.com/prometheus/prometheus/releases/download/v2.37.0/prometheus-2.37.0.linux-amd64.tar.gz
-    dest: /var/lib/metrics/prometheus-2.37.0.linux-amd64.tar.gz
-    checksum: sha256:ca70f5a261fd545da0b9893c42a73547a94ebd5111ef2b6b9f8742c5dbb73522
-    owner: metrics
-    group: metrics
+  apt:
+    pkg:
+      - prometheus
+      - prometheus-node-exporter
 
-- name: Prometheus - extract tarball
+- name: Prometheus - backup stock prometheus.yml
   become: yes
-  unarchive:
-    src: /var/lib/metrics/prometheus-2.37.0.linux-amd64.tar.gz
-    dest: /var/lib/metrics
+  copy:
+    src: /etc/prometheus/prometheus.yml
+    dest: /etc/prometheus/prometheus-ubuntu-defaults.yml
     remote_src: yes
-    owner: metrics
-    group: metrics
-
-- name: Prometheus - symlink without version
-  become: yes
-  file:
-    src: /var/lib/metrics/prometheus-2.37.0.linux-amd64
-    dest: /var/lib/metrics/prometheus
-    state: link
-    owner: metrics
-    group: metrics
 
 - name: Prometheus - upload prometheus.yml
   become: yes
   copy:
     src: files/prometheus.yml
-    dest: /var/lib/metrics/prometheus/prometheus.yml
+    dest: /etc/prometheus/prometheus.yml
     force: yes
-    owner: metrics
-    group: metrics
-
-- name: Prometheus - install systemd service
-  become: yes
-  copy:
-    src: files/systemd/prometheus.service
-    dest: /etc/systemd/system/prometheus.service
-    owner: root
-    group: root
-    mode: 0600
-
-- name: Prometheus - cleanup
-  become: yes
-  file:
-    path: /var/lib/metrics/prometheus-2.37.0.linux-amd64.tar.gz
-    state: absent
-
-#
-# node_exporter install
-#
-
-- name: node_exporter - download tarball
-  become: yes
-  get_url:
-    url: https://github.com/prometheus/node_exporter/releases/download/v1.3.1/node_exporter-1.3.1.linux-amd64.tar.gz
-    dest: /var/lib/metrics/node_exporter-1.3.1.linux-amd64.tar.gz
-    checksum: sha256:68f3802c2dd3980667e4ba65ea2e1fb03f4a4ba026cca375f15a0390ff850949
-    owner: metrics
-    group: metrics
-
-- name: node_exporter - extract tarball
-  become: yes
-  unarchive:
-    src: /var/lib/metrics/node_exporter-1.3.1.linux-amd64.tar.gz
-    dest: /var/lib/metrics/
-    remote_src: yes
-    owner: metrics
-    group: metrics
-
-- name: node_exporter - symlink without version
-  become: yes
-  file:
-    src: /var/lib/metrics/node_exporter-1.3.1.linux-amd64
-    dest: /var/lib/metrics/node_exporter
-    state: link
-    owner: metrics
-    group: metrics
-
-- name: node_exporter - install systemd service
-  become: yes
-  copy:
-    src: files/systemd/node_exporter.service
-    dest: /etc/systemd/system/node_exporter.service
-    owner: root
-    group: root
-    mode: 0600
-
-- name: node_explorer - cleanup
-  become: yes
-  file:
-    path: /var/lib/metrics/node_exporter-1.3.1.linux-amd64.tar.gz
-    state: absent
 
 #
 # Grafana install

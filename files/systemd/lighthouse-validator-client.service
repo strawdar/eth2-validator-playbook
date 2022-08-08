@@ -1,5 +1,5 @@
 [Unit]
-Description=Lighthouse Validator Client (ETH2)
+Description=Lighthouse Validator Client (Consensus Layer)
 Wants=network-online.target
 After=network-online.target
 

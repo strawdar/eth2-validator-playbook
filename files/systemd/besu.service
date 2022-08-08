@@ -1,0 +1,28 @@
+[Unit]
+Description=Besu Ethereum Client (Execution Layer)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=besu
+Group=besu
+UMask=0077
+LimitNOFILE=16384
+Restart=always
+RestartSec=5
+ExecStart=/usr/local/bin/besu \
+    --data-path=/var/lib/besu \
+    --engine-jwt-secret=/var/lib/common-el-cl/jwtsecret \
+    --sync-mode=X_CHECKPOINT \
+    --data-storage-format=BONSAI \
+    --rpc-http-enabled=true \
+    --engine-rpc-port=8551 \
+    --engine-host-allowlist=localhost,127.0.0.1 \
+    --metrics-enabled=true \
+    \
+    --network=goerli \
+    --p2p-port=33333
+
+[Install]
+WantedBy=default.target

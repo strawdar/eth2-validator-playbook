@@ -1,7 +1,7 @@
 [Unit]
-Description=Ethereum Go Client (ETH1)
-After=network.target
-Wants=network.target
+Description=Go Ethereum Client (Execution Layer)
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 Type=simple

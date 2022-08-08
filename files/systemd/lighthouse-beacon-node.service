@@ -1,5 +1,5 @@
 [Unit]
-Description=Lighthouse Beacon Node (ETH2)
+Description=Lighthouse Beacon Node (Consensus Layer)
 Wants=network-online.target
 After=network-online.target
 
@@ -17,7 +17,6 @@ ExecStart=/usr/local/bin/lighthouse bn \
     --execution-jwt /var/lib/common-el-cl/jwtsecret \
     --metrics \
     --validator-monitor-auto \
-    --target-peers 100 \
     \
     --network goerli \
     --port 9999 \

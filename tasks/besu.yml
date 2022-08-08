@@ -1,0 +1,73 @@
+---
+- name: Besu - install Java runtime
+  become: yes
+  apt:
+    pkg:
+      - openjdk-17-jre
+      - libjemalloc-dev
+
+- name: Besu - download tarball
+  become: yes
+  get_url:
+    url: https://hyperledger.jfrog.io/artifactory/besu-binaries/besu/22.7.0/besu-22.7.0.tar.gz
+    dest: /opt/besu-22.7.0.tar.gz
+    checksum: sha256:af21104a880c37706b660aa816e1c38b2b3f603a97420ddcbc889324b71aa50e
+
+- name: Besu - extract tarball
+  become: yes
+  unarchive:
+    src: /opt/besu-22.7.0.tar.gz
+    dest: /opt
+    remote_src: yes
+
+- name: Besu - symlink executable
+  become: yes
+  file:
+    src: /opt/besu-22.7.0/bin/besu
+    dest: /usr/local/bin/besu
+    state: link
+
+- name: Besu - create dedicated user
+  become: yes
+  user:
+    name: besu
+    create_home: no
+    home: /nonexistent
+    shell: /bin/false
+    groups: common-el-cl
+
+- name: Besu - prepare workspace for user
+  become: yes
+  file:
+    path: /var/lib/besu
+    state: directory
+    recurse: yes
+    mode: o-rwx
+    owner: besu
+    group: besu
+
+- name: Besu - install systemd service
+  become: yes
+  copy:
+    src: files/systemd/besu.service
+    dest: /etc/systemd/system/besu.service
+    owner: root
+    group: root
+    mode: 0600
+
+- name: Besu - cleanup
+  become: yes
+  file:
+    path: /opt/besu-22.7.0.tar.gz
+    state: absent
+
+- name: systemd daemon-reload
+  become: yes
+  systemd:
+    daemon_reload: yes
+
+- name: UFW - allow port 30303 (Besu)
+  become: yes
+  ufw:
+    rule: allow
+    port: 30303
