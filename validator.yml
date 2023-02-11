@@ -111,7 +111,10 @@
 
     - import_tasks: tasks/lighthouse.yml
  
-    - import_tasks: tasks/geth.yml
+    # Uncomment for geth EL client
+    # - import_tasks: tasks/geth.yml
+
+    - import_tasks: tasks/besu.yml
 
     - import_tasks: tasks/metrics.yml
 
