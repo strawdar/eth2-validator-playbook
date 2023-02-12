@@ -32,7 +32,7 @@
     dest: ~/src/lighthouse
     clone: yes
     update: yes
-    version: 'v2.5.1'
+    version: 'v3.4.0'
 
 - name: Lighthouse - make
   shell: . ~/.profile && make
